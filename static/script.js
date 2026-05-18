@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const albumName = document.getElementById('album-name');
     const playerEl = document.getElementById('player');
     const noCdEl = document.getElementById('no-cd');
+    const trackListEl = document.getElementById('track-list');
     const glow = document.getElementById('glow');
 
     let isPlaying = false;
@@ -62,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressBar.style.width = `${Math.min(percent, 100)}%`;
                 currentTimeEl.innerText = formatTime(state.elapsed);
             }
+
+            renderTrackList(state.metadata.tracks, state.current_track);
         }
 
         // Update Play/Pause Button
@@ -83,8 +86,51 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
+    function renderTrackList(tracks, currentTrackNum) {
+        if (!tracks || tracks.length === 0) return;
+        trackListEl.classList.remove('hidden');
+
+        // Only re-render if track count changed or first time
+        if (trackListEl.children.length !== tracks.length) {
+            trackListEl.innerHTML = '';
+            tracks.forEach(track => {
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors hover:bg-white/5 ${track.number === currentTrackNum ? 'bg-white/10 text-blue-400' : 'text-white/60'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="w-6 text-sm font-mono opacity-50">${track.number}</span>
+                        <span class="font-medium">${track.title}</span>
+                    </div>
+                    <span class="text-sm font-mono opacity-50">${formatTime(track.duration)}</span>
+                `;
+                div.onclick = () => {
+                    // Logic to jump to track could be added here
+                    // For now we just use next/prev as specified
+                };
+                trackListEl.appendChild(div);
+            });
+        } else {
+            // Update active state
+            Array.from(trackListEl.children).forEach((child, index) => {
+                const track = tracks[index];
+                if (track.number === currentTrackNum) {
+                    child.classList.add('bg-white/10', 'text-blue-400');
+                    child.classList.remove('text-white/60');
+                } else {
+                    child.classList.remove('bg-white/10', 'text-blue-400');
+                    child.classList.add('text-white/60');
+                }
+            });
+        }
+    }
+
     function startStreaming() {
-        audio.src = `/stream?t=${Date.now()}`; // Cache busting
+        // Detect iPhone/Safari for MP3 fallback
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        const streamUrl = (isSafari || isIOS) ? '/stream.mp3' : '/stream';
+        audio.src = `${streamUrl}?t=${Date.now()}`; // Cache busting
         audio.play().catch(e => console.error("Playback failed:", e));
     }
 

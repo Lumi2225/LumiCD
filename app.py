@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all()
+
 import os
 import subprocess
 import threading
@@ -6,6 +9,7 @@ import json
 import logging
 from flask import Flask, render_template, Response, jsonify, request
 from flask_socketio import SocketIO, emit
+
 try:
     import musicbrainzngs
 except ImportError:
@@ -24,7 +28,7 @@ MUSICBRAINZ_CONTACT = "https://github.com/example/cd-web-player"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 # Setup MusicBrainz
 if musicbrainzngs:
@@ -36,6 +40,7 @@ class PlayerState:
         self.playing = False
         self.current_track = 1
         self.total_tracks = 0
+        self.track_offsets = {} # track_number -> start_seconds
         self.metadata = None
         self.stream_process = None
         self.cd_inserted = False
@@ -70,15 +75,16 @@ def get_cd_info():
         disc = libdiscid.read(CD_DEVICE)
         state.cd_inserted = True
         state.total_tracks = len(disc.tracks)
+        state.track_offsets = {t.number: (t.offset / 75.0) for t in disc.tracks}
 
         # Fetch metadata from MusicBrainz
         if not musicbrainzngs:
-            print("musicbrainzngs not installed. Using dummy metadata.")
+            print("musicbrainzngs not installed.")
             state.metadata = {
-                "album": "Random Access Memories",
-                "artist": "Daft Punk",
-                "cover": "https://upload.wikimedia.org/wikipedia/en/a/a7/Random_Access_Memories.jpg",
-                "tracks": [{"number": i, "title": f"Track {i}", "duration": 300} for i in range(1, 14)]
+                "album": "Unknown Album",
+                "artist": "Unknown Artist",
+                "cover": None,
+                "tracks": [{"number": i, "title": f"Track {i}", "duration": 0} for i in range(1, state.total_tracks + 1)]
             }
             return
 
@@ -122,6 +128,7 @@ def get_cd_info():
         state.cd_inserted = False
         state.metadata = None
         state.total_tracks = 0
+        state.track_offsets = {}
 
 def stop_stream():
     if state.stream_process:
@@ -137,20 +144,25 @@ def index():
     return render_template('index.html')
 
 @app.route('/stream')
-def stream():
-    def generate():
-        # Stop existing stream if any
-        stop_stream()
+def stream_ogg():
+    return stream_generic('ogg', 'libvorbis', 'audio/ogg')
 
-        # FFmpeg command to read from CD and output OGG
-        # Using cdda://1 for track 1, etc.
+@app.route('/stream.mp3')
+def stream_mp3():
+    return stream_generic('mp3', 'libmp3lame', 'audio/mpeg')
+
+def stream_generic(fmt, codec, mimetype):
+    def generate():
+        stop_stream()
+        offset = state.track_offsets.get(state.current_track, 0)
+
         cmd = [
             'ffmpeg',
             '-f', 'libcdio',
-            '-ss', '0', # Could be used for seeking
-            '-i', f'cdda://{state.current_track}',
-            '-f', 'ogg',
-            '-acodec', 'libvorbis',
+            '-ss', str(offset),
+            '-i', CD_DEVICE,
+            '-f', fmt,
+            '-acodec', codec,
             '-ab', '128k',
             '-'
         ]
@@ -166,21 +178,14 @@ def stream():
         finally:
             stop_stream()
 
-    return Response(generate(), mimetype='audio/ogg')
+    return Response(generate(), mimetype=mimetype)
 
 @app.route('/play', methods=['GET', 'POST'])
 def play():
     if not state.cd_inserted:
-        # Mocking for verification
-        state.cd_inserted = True
-        state.total_tracks = 13
-        state.metadata = {
-            "album": "Random Access Memories",
-            "artist": "Daft Punk",
-            "cover": "https://upload.wikimedia.org/wikipedia/en/a/a7/Random_Access_Memories.jpg",
-            "tracks": [{"number": i, "title": f"Track {i}", "duration": 300} for i in range(1, 14)]
-        }
-        # get_cd_info()  # Removed: avoid resetting cd_inserted in mock mode
+        get_cd_info()
+
+    if state.cd_inserted:
         state.playing = True
         state.start_time = time.time()
         socketio.emit('status', state.to_dict())

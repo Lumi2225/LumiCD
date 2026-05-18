@@ -1,60 +1,53 @@
-# CD Web Player - Instructions d'installation
+# CD Web Player - Installation sur Debian
 
-Ce projet permet de transformer un serveur Debian (ou autre Linux) avec un lecteur CD en un lecteur de musique connecté moderne.
+Ce guide vous explique comment installer et lancer le lecteur CD Web "CD Web Player" sur un système Debian (ou Ubuntu).
 
-## 1. Prérequis Système
+## 1. Dépendances Système
 
-Vous devez installer les outils système nécessaires pour la lecture de CD et le traitement audio.
+Le projet nécessite FFmpeg pour le streaming, `libdiscid` pour l'identification des CD, et les outils `libcdio` pour la lecture directe.
+
+Ouvrez un terminal et installez les paquets nécessaires :
 
 ```bash
 sudo apt update
-sudo apt install -y ffmpeg libdiscid0 eject python3-pip
+sudo apt install -y ffmpeg libdiscid-dev libcdio-utils python3-pip eject
 ```
 
-## 2. Installation de l'application
+### Note sur FFmpeg
+Assurez-vous que votre version de FFmpeg supporte `libcdio`. Vous pouvez vérifier avec :
+```bash
+ffmpeg -demuxers | grep libcdio
+```
+Si vous voyez `D  libcdio         libcdio CDDA input`, c'est parfait.
 
-1. Clonez ou copiez les fichiers du projet.
-2. Installez les dépendances Python :
+## 2. Permissions du Lecteur CD
+
+Le serveur doit avoir les droits de lecture sur `/dev/sr0`. Vous pouvez ajouter votre utilisateur au groupe `cdrom` :
 
 ```bash
-pip install -r requirements.txt
+sudo usermod -aG cdrom $USER
 ```
+*Note : Déconnectez-vous et reconnectez-vous pour que le changement de groupe soit effectif.*
 
-Note : Si vous utilisez un environnement virtuel (recommandé) :
+## 3. Installation des Dépendances Python
+
+Il est recommandé d'utiliser un environnement virtuel :
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 3. Configuration des permissions
-
-Le serveur Flask doit avoir les droits de lecture sur le périphérique CD (`/dev/sr0`).
-Ajoutez l'utilisateur courant au groupe `cdrom` :
-
-```bash
-sudo usermod -a -G cdrom $USER
-```
-*Déconnectez-vous et reconnectez-vous pour que le changement soit pris en compte.*
-
-## 4. Lancer le serveur
+## 4. Lancer l'Application
 
 ```bash
 python3 app.py
 ```
 
-Le site sera accessible à l'adresse : `http://votre-ip:5000`
+L'application sera accessible sur `http://localhost:5000` (ou l'IP de votre serveur).
 
-## 5. Fonctionnement
-
-- Insérez un CD Audio dans le lecteur.
-- L'interface se mettra à jour automatiquement avec les métadonnées (Artiste, Album, Titres) récupérées sur MusicBrainz.
-- Utilisez les contrôles pour naviguer entre les pistes.
-- Le flux audio est encodé en temps réel en OGG pour une compatibilité maximale et une faible latence.
-
-## Structure du projet
-
-- `app.py` : Serveur Flask & API REST / Streaming.
-- `templates/` : Page HTML principale.
-- `static/` : Styles CSS (Tailwind) et Logique JavaScript.
-- `requirements.txt` : Dépendances Python.
+## Fonctionnement
+- **Mode Réel** : Insérez un CD audio. L'application détectera automatiquement le disque, récupérera les pochettes et titres via MusicBrainz, et permettra le streaming.
+- **Streaming iPhone/Safari** : L'application bascule automatiquement sur un flux MP3 pour la compatibilité avec iOS.
+- **Contrôles** : Play/Pause, Suivant, Précédent, Éjection.
