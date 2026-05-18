@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD Web Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Dynamic Background -->
+    <div class="fixed inset-0 z-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-blue-900 opacity-50"></div>
+        <div id="glow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] transition-all duration-1000"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 w-full max-w-4xl px-4 py-8">
+        <div id="no-cd" class="hidden text-center glass p-12 rounded-3xl border border-white/10">
+            <i class="fas fa-compact-disc text-6xl mb-6 text-white/20 animate-pulse"></i>
+            <h2 class="text-3xl font-bold mb-2">Aucun CD inséré</h2>
+            <p class="text-white/60">Veuillez insérer un disque pour commencer la lecture.</p>
+        </div>
+
+        <div id="player" class="glass rounded-3xl border border-white/10 overflow-hidden shadow-2xl backdrop-blur-xl">
+            <div class="flex flex-col md:flex-row p-8 gap-8">
+                <!-- Album Art Section -->
+                <div class="relative group mx-auto md:mx-0">
+                    <div id="album-art-container" class="w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl relative transition-transform duration-500 group-hover:scale-[1.02]">
+                        <img id="album-art" src="https://via.placeholder.com/400?text=CD+Player" alt="Album Cover" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <!-- Spinning CD Decoration -->
+                    <div id="cd-spinner" class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 opacity-20 pointer-events-none transition-all duration-1000">
+                        <div class="w-full h-full rounded-full border-4 border-white/20 flex items-center justify-center animate-spin-slow">
+                             <div class="w-4 h-4 rounded-full bg-white/40"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="flex-1 flex flex-col justify-center">
+                    <div class="mb-8">
+                        <h1 id="track-title" class="text-4xl md:text-5xl font-black mb-2 tracking-tight">Titre du morceau</h1>
+                        <p id="artist-name" class="text-xl text-white/70 font-medium mb-1">Artiste</p>
+                        <p id="album-name" class="text-white/40 italic">Album Name</p>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm text-white/50 mb-2 font-mono">
+                            <span id="current-time">00:00</span>
+                            <span id="total-time">00:00</span>
+                        </div>
+                        <div id="progress-container" class="h-1.5 bg-white/10 rounded-full cursor-pointer relative group">
+                            <div id="progress-bar" class="absolute top-0 left-0 h-full bg-blue-500 rounded-full transition-all duration-300 group-hover:bg-blue-400">
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-6">
+                            <button id="prev-btn" class="text-white/60 hover:text-white transition-colors text-2xl">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button id="play-btn" class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all shadow-xl">
+                                <i class="fas fa-play ml-1"></i>
+                            </button>
+                            <button id="next-btn" class="text-white/60 hover:text-white transition-colors text-2xl">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4 group">
+                            <i class="fas fa-volume-up text-white/40 group-hover:text-white/70 transition-colors"></i>
+                            <input type="range" id="volume-slider" class="w-24 accent-white opacity-40 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        </div>
+
+                        <button id="eject-btn" class="text-white/40 hover:text-red-500 transition-colors" title="Éjecter le CD">
+                            <i class="fas fa-eject"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track List / Footer -->
+            <div id="track-list" class="bg-black/20 border-t border-white/5 p-4 max-h-48 overflow-y-auto hidden">
+                <!-- Tracks will be injected here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden Audio Element -->
+    <audio id="audio-player" class="hidden"></audio>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
