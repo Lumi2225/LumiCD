@@ -1,0 +1,29 @@
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 118-483-853
+Exception in thread Thread-2 (run_server):
+Traceback (most recent call last):
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/flask_socketio/__init__.py", line 714, in run_server
+    self.wsgi_server.serve_forever()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/baseserver.py", line 398, in serve_forever
+    self.start()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/baseserver.py", line 336, in start
+    self.init_socket()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/pywsgi.py", line 1668, in init_socket
+    StreamServer.init_socket(self)
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/server.py", line 173, in init_socket
+    self.socket = self.get_listener(self.address, self.backlog, self.family)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/server.py", line 185, in get_listener
+    return _tcp_listener(address, backlog=backlog, reuse_addr=cls.reuse_addr, family=family)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/server.py", line 264, in _tcp_listener
+    sock.bind(address)
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/gevent/_socketcommon.py", line 547, in bind
+    return self._sock.bind(address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 98] Address already in use: ('0.0.0.0', 5000)
