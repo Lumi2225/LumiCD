@@ -1,0 +1,66 @@
+/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/engineio/async_drivers/eventlet.py:1: EventletDeprecationWarning:
+Eventlet is deprecated. It is currently being maintained in bugfix mode, and
+we strongly recommend against using it for new projects.
+
+If you are already using Eventlet, we recommend migrating to a different
+framework.  For more detail see
+https://eventlet.readthedocs.io/en/latest/asyncio/migration.html
+
+  from eventlet.green.threading import Event
+ * Restarting with stat
+/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/engineio/async_drivers/eventlet.py:1: EventletDeprecationWarning:
+Eventlet is deprecated. It is currently being maintained in bugfix mode, and
+we strongly recommend against using it for new projects.
+
+If you are already using Eventlet, we recommend migrating to a different
+framework.  For more detail see
+https://eventlet.readthedocs.io/en/latest/asyncio/migration.html
+
+  from eventlet.green.threading import Event
+ * Debugger is active!
+ * Debugger PIN: 118-483-853
+(57822) wsgi starting up on http://0.0.0.0:5000
+(57822) accepted ('127.0.0.1', 42104)
+127.0.0.1 - - [18/May/2026 13:56:29] "GET / HTTP/1.1" 200 6335 0.008137
+127.0.0.1 - - [18/May/2026 13:56:29] "GET /static/style.css HTTP/1.1" 200 2224 0.011272
+(57822) accepted ('127.0.0.1', 42116)
+127.0.0.1 - - [18/May/2026 13:56:29] "GET /static/script.js HTTP/1.1" 200 4800 0.001073
+127.0.0.1 - - [18/May/2026 13:56:30] "GET /socket.io/?EIO=4&transport=polling&t=PuxNxjA HTTP/1.1" 200 300 0.000709
+127.0.0.1 - - [18/May/2026 13:56:30] "POST /socket.io/?EIO=4&transport=polling&t=PuxNxkA&sid=WDkOn9YgCKTWnXxhAAAA HTTP/1.1" 200 219 0.001613
+(57822) accepted ('127.0.0.1', 42124)
+127.0.0.1 - - [18/May/2026 13:56:30] "GET /socket.io/?EIO=4&transport=polling&t=PuxNxkE&sid=WDkOn9YgCKTWnXxhAAAA HTTP/1.1" 200 181 0.000168
+127.0.0.1 - - [18/May/2026 13:56:30] "GET /socket.io/?EIO=4&transport=polling&t=PuxNxmp&sid=WDkOn9YgCKTWnXxhAAAA HTTP/1.1" 200 181 0.000202
+127.0.0.1 - - [18/May/2026 13:56:30] "POST /play HTTP/1.1" 200 1636 0.001057
+127.0.0.1 - - [18/May/2026 13:56:31] "POST /pause HTTP/1.1" 200 1633 0.003736
+127.0.0.1 - - [18/May/2026 13:56:34] "GET /socket.io/?EIO=4&transport=websocket&sid=WDkOn9YgCKTWnXxhAAAA HTTP/1.1" 200 0 3.819987
+(57822) accepted ('127.0.0.1', 47058)
+127.0.0.1 - - [18/May/2026 13:57:41] "GET / HTTP/1.1" 200 6335 0.001351
+(57822) accepted ('127.0.0.1', 47072)
+127.0.0.1 - - [18/May/2026 13:57:41] "GET /static/style.css HTTP/1.1" 200 2224 0.001292
+127.0.0.1 - - [18/May/2026 13:57:41] "GET /static/script.js HTTP/1.1" 200 4800 0.001386
+127.0.0.1 - - [18/May/2026 13:57:42] "GET /socket.io/?EIO=4&transport=polling&t=PuxODFk HTTP/1.1" 200 300 0.001529
+127.0.0.1 - - [18/May/2026 13:57:42] "POST /socket.io/?EIO=4&transport=polling&t=PuxODII&sid=C5jCsCVr7FdROMH0AAAC HTTP/1.1" 200 219 0.001357
+127.0.0.1 - - [18/May/2026 13:57:42] "GET /socket.io/?EIO=4&transport=polling&t=PuxODIK&sid=C5jCsCVr7FdROMH0AAAC HTTP/1.1" 200 1097 0.000342
+(57822) accepted ('127.0.0.1', 47082)
+127.0.0.1 - - [18/May/2026 13:57:42] "GET /socket.io/?EIO=4&transport=polling&t=PuxODIS&sid=C5jCsCVr7FdROMH0AAAC HTTP/1.1" 200 181 0.000167
+127.0.0.1 - - [18/May/2026 13:57:44] "GET /play HTTP/1.1" 200 1633 0.001079
+Traceback (most recent call last):
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/werkzeug/wsgi.py", line 270, in __next__
+    return self._next()
+           ^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/site-packages/werkzeug/wrappers/response.py", line 32, in _iter_encoded
+    for item in iterable:
+                ^^^^^^^^^
+  File "/app/app.py", line 158, in generate
+    state.stream_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'
+127.0.0.1 - - [18/May/2026 13:57:44] "GET /stream?t=1779112664091 HTTP/1.1" 500 11319 0.021935
+127.0.0.1 - - [18/May/2026 13:57:44] "GET /play HTTP/1.1" 200 1633 0.000949
+127.0.0.1 - - [18/May/2026 13:57:49] "GET /next HTTP/1.1" 200 1616 0.001299
+127.0.0.1 - - [18/May/2026 13:57:52] "GET /play HTTP/1.1" 200 1616 0.000902
+127.0.0.1 - - [18/May/2026 13:57:53] "GET /socket.io/?EIO=4&transport=websocket&sid=C5jCsCVr7FdROMH0AAAC HTTP/1.1" 200 0 11.569089
