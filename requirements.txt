@@ -3,4 +3,5 @@ Flask-SocketIO==5.3.6
 musicbrainzngs==0.7.1
 requests==2.31.0
 python-libdiscid==2.0.3
-eventlet==0.35.1
+gevent==24.2.1
+gevent-websocket==0.10.1
